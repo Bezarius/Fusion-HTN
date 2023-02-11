@@ -97,8 +97,7 @@ namespace FluidHTN
             }
             else
             {
-                throw new ArgumentNullException(
-                    "task");
+                throw new ArgumentNullException(nameof(task));
             }
 
             return (DB) this;

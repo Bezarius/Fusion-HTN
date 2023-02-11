@@ -1,0 +1,10 @@
+{
+  "name": "com.bezarius.fusion-htn",
+  "displayName": "Fusion HTN",
+  "version": "0.0.1",
+  "unity": "2020.3",
+  "description": "A simple HTN planner based around the principles of the Builder pattern, inspired by Fluid Behaviour Tree.",
+  "keywords": [
+    "HTN"
+  ]
+}

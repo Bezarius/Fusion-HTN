@@ -150,7 +150,7 @@ namespace FluidHTN
 
                 decompositionStatus = domain.FindPlan(ctx, out var newPlan);
                 isTryingToReplacePlan = _plan.Count > 0;
-                if (decompositionStatus == DecompositionStatus.Succeeded || decompositionStatus == DecompositionStatus.Partial)
+                if (decompositionStatus is DecompositionStatus.Succeeded or DecompositionStatus.Partial)
                 {
                     if (OnReplacePlan != null && (_plan.Count > 0 || _currentTask != null))
                     {
@@ -378,8 +378,7 @@ namespace FluidHTN
             }
 
             if (_currentTask == null && _plan.Count == 0 && isTryingToReplacePlan == false &&
-                (decompositionStatus == DecompositionStatus.Failed ||
-                 decompositionStatus == DecompositionStatus.Rejected))
+                decompositionStatus is DecompositionStatus.Failed or DecompositionStatus.Rejected)
             {
                 LastStatus = TaskStatus.Failure;
             }
@@ -391,7 +390,7 @@ namespace FluidHTN
         {
             _plan.Clear();
 
-            if (_currentTask != null && _currentTask is IPrimitiveTask task)
+            if (_currentTask is IPrimitiveTask task)
             {
                 task.Stop(ctx);
             }

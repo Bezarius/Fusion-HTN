@@ -102,34 +102,32 @@ namespace FluidHTN.Compounds
                 return task.OnIsValidFailed(ctx);
             }
 
-            if (task is ICompoundTask compoundTask)
+            switch (task)
             {
-                return OnDecomposeCompoundTask(ctx, compoundTask, taskIndex, oldStackDepth, out result);
-            }
-            else if (task is IPrimitiveTask primitiveTask)
-            {
-                OnDecomposePrimitiveTask(ctx, primitiveTask, taskIndex, oldStackDepth, out result);
-            }
-            else if (task is PausePlanTask)
-            {
-                if (ctx.LogDecomposition)
+                case ICompoundTask compoundTask:
+                    return OnDecomposeCompoundTask(ctx, compoundTask, taskIndex, oldStackDepth, out result);
+                case IPrimitiveTask primitiveTask:
+                    OnDecomposePrimitiveTask(ctx, primitiveTask, taskIndex, oldStackDepth, out result);
+                    break;
+                case PausePlanTask:
                 {
-                    Log(ctx, $"Sequence.OnDecomposeTask:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"Sequence.OnDecomposeTask:Return partial plan at index {taskIndex}!", ConsoleColor.DarkBlue);
+                    }
+
+                    ctx.HasPausedPartialPlan = true;
+                    ctx.PartialPlanQueue.Enqueue(new PartialPlanEntry()
+                    {
+                        Task = this,
+                        TaskIndex = taskIndex + 1,
+                    });
+
+                    result = Plan;
+                    return DecompositionStatus.Partial;
                 }
-
-                ctx.HasPausedPartialPlan = true;
-                ctx.PartialPlanQueue.Enqueue(new PartialPlanEntry()
-                {
-                    Task = this,
-                    TaskIndex = taskIndex + 1,
-                });
-
-                result = Plan;
-                return DecompositionStatus.Partial;
-            }
-            else if (task is Slot slot)
-            {
-                return OnDecomposeSlot(ctx, slot, taskIndex, oldStackDepth, out result);
+                case Slot slot:
+                    return OnDecomposeSlot(ctx, slot, taskIndex, oldStackDepth, out result);
             }
 
             result = Plan;
@@ -163,33 +161,35 @@ namespace FluidHTN.Compounds
         {
             var status = task.Decompose(ctx, 0, out var subPlan);
 
-            // If result is null, that means the entire planning procedure should cancel.
-            if (status == DecompositionStatus.Rejected)
+            switch (status)
             {
-                if (ctx.LogDecomposition)
+                // If result is null, that means the entire planning procedure should cancel.
+                case DecompositionStatus.Rejected:
                 {
-                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                    }
+
+                    Plan.Clear();
+                    ctx.TrimToStackDepth(oldStackDepth);
+
+                    result = null;
+                    return DecompositionStatus.Rejected;
                 }
-
-                Plan.Clear();
-                ctx.TrimToStackDepth(oldStackDepth);
-
-                result = null;
-                return DecompositionStatus.Rejected;
-            }
-
-            // If the decomposition failed
-            if (status == DecompositionStatus.Failed)
-            {
-                if (ctx.LogDecomposition)
+                // If the decomposition failed
+                case DecompositionStatus.Failed:
                 {
-                    Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
-                }
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"Sequence.OnDecomposeCompoundTask:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                    }
 
-                Plan.Clear();
-                ctx.TrimToStackDepth(oldStackDepth);
-                result = Plan;
-                return DecompositionStatus.Failed;
+                    Plan.Clear();
+                    ctx.TrimToStackDepth(oldStackDepth);
+                    result = Plan;
+                    return DecompositionStatus.Failed;
+                }
             }
 
             while (subPlan.Count > 0)
@@ -239,33 +239,35 @@ namespace FluidHTN.Compounds
         {
             var status = task.Decompose(ctx, 0, out var subPlan);
 
-            // If result is null, that means the entire planning procedure should cancel.
-            if (status == DecompositionStatus.Rejected)
+            switch (status)
             {
-                if (ctx.LogDecomposition)
+                // If result is null, that means the entire planning procedure should cancel.
+                case DecompositionStatus.Rejected:
                 {
-                    Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} was rejected.", ConsoleColor.Red);
+                    }
+
+                    Plan.Clear();
+                    ctx.TrimToStackDepth(oldStackDepth);
+
+                    result = null;
+                    return DecompositionStatus.Rejected;
                 }
-
-                Plan.Clear();
-                ctx.TrimToStackDepth(oldStackDepth);
-
-                result = null;
-                return DecompositionStatus.Rejected;
-            }
-
-            // If the decomposition failed
-            if (status == DecompositionStatus.Failed)
-            {
-                if (ctx.LogDecomposition)
+                // If the decomposition failed
+                case DecompositionStatus.Failed:
                 {
-                    Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
-                }
+                    if (ctx.LogDecomposition)
+                    {
+                        Log(ctx, $"Sequence.OnDecomposeSlot:{status}: Decomposing {task.Name} failed.", ConsoleColor.Red);
+                    }
 
-                Plan.Clear();
-                ctx.TrimToStackDepth(oldStackDepth);
-                result = Plan;
-                return DecompositionStatus.Failed;
+                    Plan.Clear();
+                    ctx.TrimToStackDepth(oldStackDepth);
+                    result = Plan;
+                    return DecompositionStatus.Failed;
+                }
             }
 
             while (subPlan.Count > 0)

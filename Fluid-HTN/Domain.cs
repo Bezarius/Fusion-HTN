@@ -100,7 +100,7 @@ namespace FluidHTN
                     else
                     {
                         status = kvp.Task.Decompose(ctx, kvp.TaskIndex, out var p);
-                        if (status == DecompositionStatus.Succeeded || status == DecompositionStatus.Partial)
+                        if (status is DecompositionStatus.Succeeded or DecompositionStatus.Partial)
                         {
                             while (p.Count > 0)
                             {
@@ -119,7 +119,7 @@ namespace FluidHTN
 
                 // If we failed to continue the paused partial plan,
                 // then we have to start planning from the root.
-                if (status == DecompositionStatus.Rejected || status == DecompositionStatus.Failed)
+                if (status is DecompositionStatus.Rejected or DecompositionStatus.Failed)
                 {
                     ctx.MethodTraversalRecord.Clear();
 
@@ -160,7 +160,7 @@ namespace FluidHTN
                 // if it was a partial plan.
                 if (lastPartialPlanQueue != null)
                 {
-                    if (status == DecompositionStatus.Rejected || status == DecompositionStatus.Failed)
+                    if (status is DecompositionStatus.Rejected or DecompositionStatus.Failed)
                     {
                         ctx.HasPausedPartialPlan = true;
                         ctx.PartialPlanQueue.Clear();
@@ -197,7 +197,7 @@ namespace FluidHTN
                 }
             }
 
-            if (status == DecompositionStatus.Succeeded || status == DecompositionStatus.Partial)
+            if (status is DecompositionStatus.Succeeded or DecompositionStatus.Partial)
             {
                 // Trim away any plan-only or plan&execute effects from the world state change stack, that only
                 // permanent effects on the world state remains now that the planning is done.
@@ -207,7 +207,7 @@ namespace FluidHTN
                 for (var i = 0; i < ctx.WorldStateChangeStack.Length; i++)
                 {
                     var stack = ctx.WorldStateChangeStack[i];
-                    if (stack != null && stack.Count > 0)
+                    if (stack is { Count: > 0 })
                     {
                         ctx.WorldState[i] = stack.Peek().Value;
                         stack.Clear();
@@ -222,7 +222,7 @@ namespace FluidHTN
                 {
                     var stack = ctx.WorldStateChangeStack[i];
 
-                    if (stack != null && stack.Count > 0)
+                    if (stack is { Count: > 0 })
                     {
                         stack.Clear();
                     }
