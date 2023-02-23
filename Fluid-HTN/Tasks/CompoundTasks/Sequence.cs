@@ -74,13 +74,13 @@ namespace FluidHTN.Compounds
                     case DecompositionStatus.Failed:
                     case DecompositionStatus.Partial:
                     {
-                        ctx.Factory.FreeArray(ref oldStackDepth);
+                        ctx.Factory.ReturnArray(ref oldStackDepth);
                         return status;
                     }
                 }
             }
 
-            ctx.Factory.FreeArray(ref oldStackDepth);
+            ctx.Factory.ReturnArray(ref oldStackDepth);
 
             result = Plan;
             return result.Count == 0 ? DecompositionStatus.Failed : DecompositionStatus.Succeeded;

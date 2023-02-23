@@ -122,7 +122,7 @@ namespace FluidHTN
                     if (ctx.HasPausedPartialPlan)
                     {
                         ctx.HasPausedPartialPlan = false;
-                        lastPartialPlanQueue = ctx.Factory.CreateQueue<PartialPlanEntry>();
+                        lastPartialPlanQueue = ctx.Factory.GetQueue<PartialPlanEntry>();
                         while (ctx.PartialPlanQueue.Count > 0)
                         {
                             lastPartialPlanQueue.Enqueue(ctx.PartialPlanQueue.Dequeue());
@@ -167,7 +167,7 @@ namespace FluidHTN
                         _plan.Enqueue(newPlan.Dequeue());
                     }
 
-                    if (_currentTask != null && _currentTask is IPrimitiveTask t)
+                    if (_currentTask is IPrimitiveTask t)
                     {
                         OnStopCurrentTask?.Invoke(t);
                         t.Stop(ctx);
@@ -202,7 +202,7 @@ namespace FluidHTN
                     {
                         ctx.PartialPlanQueue.Enqueue(lastPartialPlanQueue.Dequeue());
                     }
-                    ctx.Factory.FreeQueue(ref lastPartialPlanQueue);
+                    ctx.Factory.ReturnQueue(ref lastPartialPlanQueue);
 
                     if (ctx.LastMTR.Count > 0)
                     {

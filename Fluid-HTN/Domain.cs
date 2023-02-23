@@ -138,7 +138,7 @@ namespace FluidHTN
                 if (ctx.HasPausedPartialPlan)
                 {
                     ctx.HasPausedPartialPlan = false;
-                    lastPartialPlanQueue = ctx.Factory.CreateQueue<PartialPlanEntry>();
+                    lastPartialPlanQueue = ctx.Factory.GetQueue<PartialPlanEntry>();
 
                     while (ctx.PartialPlanQueue.Count > 0)
                     {
@@ -170,7 +170,7 @@ namespace FluidHTN
                             ctx.PartialPlanQueue.Enqueue(lastPartialPlanQueue.Dequeue());
                         }
 
-                        ctx.Factory.FreeQueue(ref lastPartialPlanQueue);
+                        ctx.Factory.ReturnQueue(ref lastPartialPlanQueue);
                     }
                 }
             }

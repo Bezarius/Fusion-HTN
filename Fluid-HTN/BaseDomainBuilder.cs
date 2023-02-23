@@ -17,15 +17,15 @@ namespace FluidHTN
 
         protected readonly Domain<T> _domain;
         protected List<ITask> _pointers;
-        protected readonly IFactory _factory;
+        protected readonly ICollectionPool _factory;
 
         // ========================================================= CONSTRUCTION
 
-        public BaseDomainBuilder(string domainName, IFactory factory)
+        public BaseDomainBuilder(string domainName, ICollectionPool factory)
         {
             _factory = factory;
             _domain = new Domain<T>(domainName);
-            _pointers = _factory.CreateList<ITask>();
+            _pointers = _factory.GetList<ITask>();
             _pointers.Add(_domain.Root);
         }
 
@@ -359,7 +359,7 @@ namespace FluidHTN
                 throw new Exception($"The domain definition lacks one or more End() statements. Pointer is '{Pointer.Name}', but expected '{_domain.Root.Name}'.");
             }
 
-            _factory.FreeList(ref _pointers);
+            _factory.ReturnList(ref _pointers);
 
             return _domain;
         }

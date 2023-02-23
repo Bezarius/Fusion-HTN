@@ -3,36 +3,36 @@ using System.Collections.Generic;
 
 namespace FluidHTN.Factory
 {
-    public sealed class DefaultFactory : IFactory
+    public sealed class DefaultCollectionPool : ICollectionPool
     {
-        public T[] CreateArray<T>(int length)
+        public T[] GetArray<T>(int length)
         {
             return new T[length];
         }
 
-        public List<T> CreateList<T>()
+        public List<T> GetList<T>()
         {
             return new List<T>();
         }
 
-        public Queue<T> CreateQueue<T>()
+        public Queue<T> GetQueue<T>()
         {
             return new Queue<T>();
         }
 
-        public bool FreeArray<T>(ref T[] array)
+        public bool ReturnArray<T>(ref T[] array)
         {
             array = null;
             return array == null;
         }
 
-        public bool FreeList<T>(ref List<T> list)
+        public bool ReturnList<T>(ref List<T> list)
         {
             list = null;
             return list == null;
         }
 
-        public bool FreeQueue<T>(ref Queue<T> queue)
+        public bool ReturnQueue<T>(ref Queue<T> queue)
         {
             queue = null;
             return queue == null;

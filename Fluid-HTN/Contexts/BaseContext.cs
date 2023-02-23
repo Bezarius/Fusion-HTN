@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using FluidHTN.Conditions;
 using FluidHTN.Debug;
 using FluidHTN.Factory;
+using Fusion;
 
 namespace FluidHTN.Contexts
 {
-    public abstract class BaseContext : IContext
+    public abstract class BaseContext : NetworkAreaOfInterestBehaviour, IContext
     {
         // ========================================================= PROPERTIES
 
@@ -14,7 +15,7 @@ namespace FluidHTN.Contexts
         public bool IsDirty { get; set; }
         public ContextState ContextState { get; set; } = ContextState.Executing;
         public int CurrentDecompositionDepth { get; set; } = 0;
-        public abstract IFactory Factory { get; set; }
+        public abstract ICollectionPool Factory { get; set; }
         public List<int> MethodTraversalRecord { get; set; } = new List<int>();
         public List<int> LastMTR { get; } = new List<int>();
         public abstract List<string> MTRDebug { get; set; }
@@ -24,14 +25,14 @@ namespace FluidHTN.Contexts
         public abstract bool LogDecomposition { get; }
         public Queue<PartialPlanEntry> PartialPlanQueue { get; set; } = new Queue<PartialPlanEntry>();
         public bool HasPausedPartialPlan { get; set; } = false;
-
+        
         public abstract byte[] WorldState { get; }
 
         public Stack<KeyValuePair<EffectType, byte>>[] WorldStateChangeStack { get; protected set; }
 
         // ========================================================= INITIALIZATION
-
-        public virtual void Init()
+        
+        public override void Spawned()
         {
             if (WorldStateChangeStack == null)
             {
@@ -112,9 +113,9 @@ namespace FluidHTN.Contexts
 
         // ========================================================= STATE STACK HANDLING
 
-        public int[] GetWorldStateChangeDepth(IFactory factory)
+        public int[] GetWorldStateChangeDepth(ICollectionPool factory)
         {
-            var stackDepth = factory.CreateArray<int>(WorldStateChangeStack.Length);
+            var stackDepth = factory.GetArray<int>(WorldStateChangeStack.Length);
 
             for (var i = 0; i < WorldStateChangeStack.Length; i++)
             {

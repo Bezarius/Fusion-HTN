@@ -29,7 +29,7 @@ namespace FluidHTN
         ContextState ContextState { get; set; }
         int CurrentDecompositionDepth { get; set; }
 
-        IFactory Factory { get; set; }
+        ICollectionPool Factory { get; set; }
 
         /// <summary>
         ///     The Method Traversal Record is used while decomposing a domain and
@@ -99,7 +99,7 @@ namespace FluidHTN
         byte GetState(int state);
         void SetState(int state, byte value, bool setAsDirty = true, EffectType e = EffectType.Permanent);
 
-        int[] GetWorldStateChangeDepth(IFactory factory);
+        int[] GetWorldStateChangeDepth(ICollectionPool factory);
 
         void Log(string name, string description, int depth, ITask task, ConsoleColor color = ConsoleColor.White);
         void Log(string name, string description, int depth, ICondition condition, ConsoleColor color = ConsoleColor.DarkGreen);

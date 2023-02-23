@@ -13,11 +13,11 @@ namespace FluidHTN
     {
         // ========================================================= CONSTRUCTION
 
-        public DomainBuilder(string domainName) : base(domainName, new DefaultFactory())
+        public DomainBuilder(string domainName) : base(domainName, new DefaultCollectionPool())
         {
         }
 
-        public DomainBuilder(string domainName, IFactory factory) : base(domainName, factory)
+        public DomainBuilder(string domainName, ICollectionPool factory) : base(domainName, factory)
         {
         }
     }
